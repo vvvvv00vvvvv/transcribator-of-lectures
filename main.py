@@ -141,7 +141,10 @@ def main():
             model_size = "medium"
             compute_type = "int8"
             print("Доступно менее 3 ГБ VRAM. Автоматический переподбор на модель 'medium' в режиме int8.")
-
+    else:
+        device = "cpu"
+        compute_type = "int8"
+        print("GPU не найден или CUDA недоступна. Запуск обработки на CPU.")
 
     print(f"Загрузка модели {model_size}...")
     model = WhisperModel(model_size, device=device, compute_type=compute_type)

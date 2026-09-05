@@ -1,4 +1,6 @@
 --extra-index-url https://download.pytorch.org/whl/cu130
 torch
+nvidia-cublas-cu12
+nvidia-cudnn-cu12
 faster-whisper
 static-ffmpeg
