@@ -1,5 +1,19 @@
 # Транскрибатор Аудио/Видео
 Автоматическая транскрибация медиафайлов с помощью `faster-whisper` и разбиением текста на части для передачи в LLM.
+### Ввод
+На вход программе подается медиафайл для транскрибации
+
+### Вывод
+На выходе в той же папке, что и медиафайл, получаем текстовые файлы:
+- <название медифайла> raw transcript.txt
+- <название медифайла> raw transcript_part_1.txt
+- <название медифайла> raw transcript_part_2.txt
+
+...
+
+(по умолчанию исходный текст делится на 4 части)
+
+---
 
 ## Требования
 - Наличие Python 3.12 на ПК
@@ -22,7 +36,7 @@ cd transcribator-of-lectures
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install torch --index-url https://download.pytorch.org/whl/cu121
+pip install torch --index-url https://download.pytorch.org/whl/cu130
 pip install faster-whisper static-ffmpeg
 python main.py
 ```
