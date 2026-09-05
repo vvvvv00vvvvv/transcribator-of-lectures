@@ -18,7 +18,7 @@ cd transcribator-of-lectures
 .\run.bat
 ```
 
-#### Linux (с видеокартами NVIDIA / CUDA 12.1)
+#### Linux (с NVIDIA GPU / CUDA 12.1)
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
