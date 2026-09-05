@@ -18,11 +18,11 @@ cd transcribator-of-lectures
 .\run.bat
 ```
 
-#### Linux (с NVIDIA GPU / CUDA 12.1)
+#### Linux (с NVIDIA GPU / CUDA 13.0)
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install torch --index-url https://download.pytorch.org/whl/cu121
+pip install torch --index-url https://download.pytorch.org/whl/cu130
 pip install faster-whisper static-ffmpeg
 python main.py
 ```

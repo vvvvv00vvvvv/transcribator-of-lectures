@@ -2,6 +2,7 @@ from pathlib import Path
 import datetime
 import os
 import sys
+import torch
 
 # 1. Автоматическое определение базового пути к Python (даже внутри .venv)
 base_python_dir = sys.base_prefix
@@ -15,25 +16,19 @@ if os.path.exists(tcl_dir):
 if os.path.exists(tk_dir):
     os.environ["TK_LIBRARY"] = tk_dir
 
-# 3. Подключение библиотек CUDA из PyTorch и NVIDIA в системный PATH
-try:
-    import torch
-    torch_dir = os.path.dirname(torch.__file__)
-    nvidia_dir = os.path.join(os.path.dirname(torch_dir), 'nvidia')
-
-    torch_lib = os.path.join(torch_dir, 'lib')
-    if os.path.exists(torch_lib):
-        os.add_dll_directory(torch_lib)
-        os.environ['PATH'] = torch_lib + os.path.pathsep + os.environ['PATH']
-
-    if os.path.exists(nvidia_dir):
-        for root, dirs, files in os.walk(nvidia_dir):
-            if 'lib' in dirs:
-                lib_path = os.path.join(root, 'lib')
-                os.add_dll_directory(lib_path)
-                os.environ['PATH'] = lib_path + os.path.pathsep + os.environ['PATH']
-except Exception:
-    pass
+# 3. Подключение библиотек CUDA в Windows для CTranslate2 (cublas64_12.dll и cudnn)
+if sys.platform == "win32":
+    cuda_paths = [
+        os.path.join(sys.prefix, "Lib", "site-packages", "nvidia", "cublas", "bin"),
+        os.path.join(sys.prefix, "Lib", "site-packages", "nvidia", "cublas", "lib"),
+        os.path.join(sys.prefix, "Lib", "site-packages", "nvidia", "cudnn", "bin"),
+        os.path.join(sys.prefix, "Lib", "site-packages", "nvidia", "cudnn", "lib"),
+        os.path.join(sys.prefix, "Lib", "site-packages", "torch", "lib"),
+    ]
+    for path in cuda_paths:
+        if os.path.exists(path):
+            os.add_dll_directory(path)
+            os.environ["PATH"] = path + os.path.pathsep + os.environ.get("PATH", "")
 
 import static_ffmpeg
 from faster_whisper import WhisperModel
@@ -129,16 +124,25 @@ def main():
     video_path = Path(file_path_str)
     text_path = video_path.with_name(f"{video_path.stem}.raw transcript.txt")
 
+    model_size = "large-v3"
     if torch.cuda.is_available():
         device = "cuda"
-        compute_type = "float16"
-        print("Используется видеокарта NVIDIA (CUDA).")
-    else:
-        device = "cpu"
-        compute_type = "int8"
-        print("GPU не найден или CUDA не доступна. Переключение на CPU.")
+        free_bytes, _ = torch.cuda.mem_get_info()
+        free_vram_gb = free_bytes / (1024 ** 3)
 
-    model_size = "large-v3"
+        if free_vram_gb >= 5.0:
+            model_size = "large-v3"
+            compute_type = "float16"
+        elif free_vram_gb >= 3.0:
+            model_size = "large-v3-turbo"
+            compute_type = "float16"
+            print("Мало VRAM для large-v3. Выбрана оптимизированная модель large-v3-turbo.")
+        else:
+            model_size = "medium"
+            compute_type = "int8"
+            print("Доступно менее 3 ГБ VRAM. Автоматический переподбор на модель 'medium' в режиме int8.")
+
+
     print(f"Загрузка модели {model_size}...")
     model = WhisperModel(model_size, device=device, compute_type=compute_type)
 

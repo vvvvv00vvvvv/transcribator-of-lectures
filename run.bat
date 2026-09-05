@@ -14,10 +14,19 @@ if not exist ".venv\Scripts\activate.bat" (
     exit /b
 )
 
-echo Установка PyTorch c поддержкой CUDA 12.1...
 call .venv\Scripts\activate.bat
 python -m pip install --upgrade pip
-pip install torch --index-url https://download.pytorch.org/whl/cu121
+
+nvidia-smi >nul 2>&1
+if %errorlevel%==0 (
+    echo NVIDIA GPU найден. Установка библиотек PyTorch и CUDA...
+    pip install torch --index-url https://download.pytorch.org/whl/cu130
+    pip install nvidia-cublas-cu12 nvidia-cudnn-cu12
+) else (
+    echo GPU не найден. Установка CPU-версии PyTorch...
+    pip install torch
+)
+
 pip install faster-whisper static-ffmpeg
 goto RUN
 
