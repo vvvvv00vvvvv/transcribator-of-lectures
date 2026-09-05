@@ -1,21 +1,40 @@
 # Транскрибатор Аудио/Видео
+Автоматическая транскрибация медиафайлов с помощью `faster-whisper` и разбиением текста на части для передачи в LLM.
 
 ## Требования
 - Наличие Python 3.12 на ПК
 
-## Запуск
-### Windows
-Запустить `run.bat`
-
-Или в в терминале:
-1. Перейти в папку проекта
-```dos
-cd <папка>
+## Установка и запуск
+### 1. Клонирование репозитория
+```bash
+git clone https://github.com/vvvvv00vvvvv/transcribator-of-lectures.git
+cd transcribator-of-lectures
 ```
 
-2. Выполнить 
-```dos
+### 2. Запуск
+#### Windows
+Запустите файл `run.bat` двойным кликом или через консоль:
+```cmd
 .\run.bat
 ```
+
+#### Linux (с видеокартами NVIDIA / CUDA 12.1)
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install torch --index-url https://download.pytorch.org/whl/cu121
+pip install faster-whisper static-ffmpeg
+python main.py
+```
+
+#### macOS / Linux (без NVIDIA GPU / обработка на CPU)
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install torch faster-whisper static-ffmpeg
+python main.py
+```
+
+---
 
 [Промпт LLM для улучшения качества текста (Лекции) и избавления от ошибок транскрибации](./Prompt_for_LLM.md)
