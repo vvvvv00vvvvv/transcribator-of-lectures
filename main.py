@@ -1,4 +1,5 @@
 from pathlib import Path
+import datetime
 import os
 import sys
 
@@ -116,6 +117,9 @@ def select_file():
     user_input = input("Перетащите видеофайл в окно консоли и нажмите Enter: ")
     return user_input.strip('"').strip("'")
 
+def format_time(seconds):
+    return str(datetime.timedelta(seconds=int(seconds))).zfill(8)
+
 def main():
     file_path_str = select_file()
     if not file_path_str:
@@ -149,7 +153,13 @@ def main():
 
     with open(text_path, "w", encoding="utf-8") as f:
         for segment in segments:
-            line = f"{segment.text}"
+            start_t = format_time(segment.start)
+
+            end_t = format_time(segment.end)
+            # Формируем строку: [00:00:05 -> 00:00:10] Текст сообщения
+
+            line = f"[{start_t} -> {end_t}] {segment.text}"
+            # line = f"{segment.text}"
             print(line)
             f.write(line + "\n")
 
