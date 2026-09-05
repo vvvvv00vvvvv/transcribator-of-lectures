@@ -18,7 +18,7 @@ cd transcribator-of-lectures
 .\run.bat
 ```
 
-#### Linux (с видеокартами NVIDIA / CUDA 12.1)
+#### Linux (с NVIDIA GPU / CUDA 12.1)
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
@@ -37,4 +37,9 @@ python main.py
 
 ---
 
-[Промпт LLM для улучшения качества текста (Лекции) и избавления от ошибок транскрибации](./Prompt_for_LLM.md)
+### 3. Улучшение текста
+Для улучшения текста и избавления от ошибок транскрибации вставьте этот промпт в вашу нейросеть и добавьте текст из созданных файлов:
+
+`<название исходного медиафайла> raw transcript_part_*`
+
+[Промпт для LLM](./Prompt_for_LLM.md)
